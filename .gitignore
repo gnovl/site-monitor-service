@@ -1,0 +1,29 @@
+# Node modules
+node_modules/
+
+# Python virtual environment
+venv/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# Docker volumes
+prometheus_data/
+grafana_data/
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*

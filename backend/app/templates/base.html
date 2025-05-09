@@ -1,0 +1,103 @@
+<!-- backend/app/templates/base.html -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="description" content="Site Monitor Pro - DevOps Demo Project" />
+    <title>{% block title %}Site Monitor Pro{% endblock %}</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Add custom CSS -->
+    <style>
+      body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+          "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
+          "Helvetica Neue", sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      code {
+        font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+          monospace;
+      }
+
+      /* Custom scrollbar for better UX */
+      ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+
+      ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+      }
+
+      ::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 4px;
+      }
+
+      ::-webkit-scrollbar-thumb:hover {
+        background: #555;
+      }
+
+      /* Add smooth transitions to buttons and interactive elements */
+      button {
+        transition: all 0.2s ease-in-out;
+      }
+
+      /* Add subtle hover effect to table rows */
+      tbody tr {
+        transition: background-color 0.2s;
+      }
+
+      tbody tr:hover {
+        background-color: rgba(243, 244, 246, 0.5);
+      }
+    </style>
+    {% block head %}{% endblock %}
+  </head>
+  <body class="min-h-screen bg-gray-50 flex flex-col">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-gray-200">
+      <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center py-4">
+          <div class="flex items-center">
+            <h1 class="text-2xl font-bold text-gray-900">Site Monitor Pro</h1>
+            <p class="ml-4 text-gray-500">Monitor your websites in real-time</p>
+          </div>
+          <div class="flex space-x-3">
+            <a
+              href="{{ url_for('api.add_site') }}"
+              class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gray-900 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+            >
+              {% if sites_count == 0 %}Add Your First Site{% else %}Add New
+              Site{% endif %}
+            </a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow">
+      <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        {% block content %}{% endblock %}
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 py-4">
+      <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
+        <p class="text-center text-gray-500 text-sm">
+          &copy; {{ current_year }} Site Monitor Pro - DevOps Showcase Project
+        </p>
+      </div>
+    </footer>
+
+    {% block scripts %}{% endblock %}
+  </body>
+</html>

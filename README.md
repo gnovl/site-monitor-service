@@ -1,6 +1,6 @@
 # Site Monitor Pro - DevOps Showcase
 
-A modern DevOps project that demonstrates a complete deployment pipeline for a site monitoring service with a modern UI.
+A modern DevOps project that demonstrates a complete deployment pipeline for a site monitoring service with a simple Python Flask application.
 
 ## Features
 
@@ -21,6 +21,7 @@ A modern DevOps project that demonstrates a complete deployment pipeline for a s
 - **Infrastructure as Code** with Terraform
 - **Automated Testing** with Pytest
 - **Application Deployment** to cloud providers
+- **Web Application** built with Python Flask and Jinja2 templates
 
 ## Getting Started
 
@@ -73,15 +74,19 @@ This project includes Terraform configurations for deploying to AWS:
 
 ## Project Structure
 
-- `/backend` - Python Flask API
-- `/frontend` - React frontend
+- `/backend` - Python Flask application
 - `/monitoring` - Prometheus and Grafana configurations
 - `/terraform` - Infrastructure as Code
 - `/.github/workflows` - CI/CD pipelines
 
-## Backend API
+## Backend Application
 
-The backend provides a RESTful API for managing monitored sites:
+The backend is a Flask application that provides:
+
+- Web interface for monitoring sites
+- RESTful API for managing monitored sites
+
+### API Endpoints
 
 - `GET /api/sites` - List all monitored sites
 - `POST /api/sites` - Add a new site to monitor
@@ -90,15 +95,13 @@ The backend provides a RESTful API for managing monitored sites:
 - `DELETE /api/sites/{id}` - Remove a site from monitoring
 - `POST /api/sites/{id}/check` - Manually trigger a site check
 
-## Frontend
+### Web Interface
 
-The React frontend provides an intuitive UI for:
-
-- Viewing the status of all monitored sites
-- Adding new sites to monitor
-- Removing sites from monitoring
-- Manually triggering site checks
-- Visualizing response time data
+- `/` - Dashboard showing all monitored sites
+- `/add` - Form to add a new site
+- `/site/{id}` - Details for a specific site
+- `/site/{id}/check` - Manually trigger a site check
+- `/site/{id}/delete` - Remove a site from monitoring
 
 ## Monitoring Setup
 
@@ -131,17 +134,12 @@ The GitHub Actions workflows handle:
 
 ### Common Issues
 
-1. **Backend failing to start**
+1. **Application failing to start**
 
    - Check for compatible Flask and Werkzeug versions in requirements.txt
    - Ensure all Python dependencies are correctly installed
 
-2. **Frontend not connecting to backend**
-
-   - Verify the proxy settings in nginx.conf
-   - Check that backend service is running and accessible
-
-3. **Prometheus or Grafana issues**
+2. **Prometheus or Grafana issues**
    - Ensure volumes are properly mounted
    - Check configuration files for correct targets
 
@@ -151,11 +149,11 @@ Useful Docker commands for troubleshooting:
 
 ```
 # View logs for a specific service
-docker-compose logs backend
-docker-compose logs frontend
+docker-compose logs app
+docker-compose logs prometheus
 
 # Restart a specific service
-docker-compose restart backend
+docker-compose restart app
 
 # Rebuild services
 docker-compose build --no-cache

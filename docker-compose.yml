@@ -1,13 +1,14 @@
 version: "3.8"
 
 services:
-  backend:
+  app:
     build: ./backend
     restart: unless-stopped
     ports:
-      - "5000:5000"
+      - "80:5000"
     environment:
       - FLASK_ENV=production
+      - SECRET_KEY=dev_key_for_site_monitor
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
       interval: 30s
@@ -15,17 +16,6 @@ services:
       retries: 3
     volumes:
       - ./backend:/app
-
-  frontend:
-    build:
-      context: ./frontend
-      args:
-        - NODE_OPTIONS=--max_old_space_size=4096
-    restart: unless-stopped
-    ports:
-      - "80:80"
-    depends_on:
-      - backend
 
   prometheus:
     image: prom/prometheus:latest
@@ -36,7 +26,7 @@ services:
       - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus_data:/prometheus
     depends_on:
-      - backend
+      - app
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
       - "--storage.tsdb.path=/prometheus"

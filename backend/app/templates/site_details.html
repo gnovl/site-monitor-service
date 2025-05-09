@@ -1,0 +1,88 @@
+<!-- backend/app/templates/site_details.html -->
+{% extends "base.html" %} {% block title %}{{ site.name }} Details - Site
+Monitor Pro{% endblock %} {% block content %}
+<div
+  class="bg-white shadow-md rounded-lg p-6 border border-gray-200 max-w-3xl mx-auto"
+>
+  <div class="flex items-center justify-between mb-6">
+    <h2 class="text-xl font-medium text-gray-900">{{ site.name }} Details</h2>
+    <div>
+      <a
+        href="{{ url_for('api.check_site_route', site_id=site.id) }}"
+        class="inline-flex items-center px-3 py-1.5 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 mr-2"
+      >
+        Check Now
+      </a>
+      <a
+        href="{{ url_for('api.index') }}"
+        class="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gray-900 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+      >
+        Back to Dashboard
+      </a>
+    </div>
+  </div>
+
+  <div class="space-y-6">
+    <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+      <h3 class="text-sm font-medium text-gray-500 mb-1">URL</h3>
+      <p class="text-gray-900">{{ site.url }}</p>
+    </div>
+
+    <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+      <h3 class="text-sm font-medium text-gray-500 mb-1">Current Status</h3>
+      <p>
+        <span
+          class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {% if site.status.startswith('OK') %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}"
+        >
+          {{ site.status }}
+        </span>
+      </p>
+    </div>
+
+    <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+      <h3 class="text-sm font-medium text-gray-500 mb-1">Last Checked</h3>
+      <p class="text-gray-900">
+        {{ site.last_checked_formatted if site.last_checked else "Never" }}
+      </p>
+    </div>
+
+    <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+      <h3 class="text-sm font-medium text-gray-500 mb-1">Response Time</h3>
+      <p class="text-gray-900">
+        <span
+          class="{% if site.response_time > 1000 %}text-red-600 font-medium{% elif site.response_time > 500 %}text-yellow-600{% endif %}"
+        >
+          {{ site.response_time }} ms {% if site.response_time > 1000 %}
+          <span
+            class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800"
+            >Slow</span
+          >
+          {% endif %}
+        </span>
+      </p>
+    </div>
+
+    <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+      <h3 class="text-sm font-medium text-gray-500 mb-1">Check Interval</h3>
+      <p class="text-gray-900">{{ site.check_interval }} seconds</p>
+    </div>
+
+    <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+      <h3 class="text-sm font-medium text-gray-500 mb-1">Status Badge</h3>
+      <div class="mt-2">
+        <p class="mb-2 text-xs text-gray-600">
+          You can embed this badge in your README or website:
+        </p>
+        <img src="{{ badge_url }}" alt="Status Badge" class="mb-2" />
+        <input
+          type="text"
+          readonly
+          value="![Status]({{ badge_url }})"
+          class="text-xs mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 bg-white"
+          onclick="this.select()"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

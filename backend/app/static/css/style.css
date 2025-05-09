@@ -1,0 +1,23 @@
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex-grow: 1;
+}
+
+/* Add smooth transitions to buttons */
+button {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Hover effect on table rows */
+tbody tr {
+  transition: background-color 0.2s;
+}
+
+tbody tr:hover {
+  background-color: rgba(243, 244, 246, 0.5);
+}

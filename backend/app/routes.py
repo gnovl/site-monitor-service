@@ -227,3 +227,22 @@ def check_single_site_api(site_id):
 @api_bp.route('/health', methods=['GET'])
 def health_check():
     return jsonify({"status": "healthy"})
+
+@api_bp.route('/healthz', methods=['GET'])
+def detailed_health_check():
+    """Detailed health check endpoint for Kubernetes and other cloud platforms."""
+    # Check database connection if you have one
+    # Check external services if you depend on any
+    
+    # You can add more checks here as your application grows
+    health_data = {
+        "status": "healthy",
+        "version": "1.0.0",
+        "timestamp": datetime.now().isoformat(),
+        "checks": {
+            "app": "ok",
+            "sites_count": len(get_all_sites())
+        }
+    }
+    
+    return jsonify(health_data)

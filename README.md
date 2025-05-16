@@ -1,5 +1,7 @@
 # Site Monitor Pro - DevOps Showcase
 
+[![Site Monitor Pro CI/CD](https://github.com/gnovl/site-monitor-service/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/gnovl/site-monitor-service/actions/workflows/ci-cd.yml)
+
 A modern DevOps project that demonstrates a complete deployment pipeline for a site monitoring service with a simple Python Flask application.
 
 ## Features

@@ -3,6 +3,7 @@ from flask_cors import CORS
 from prometheus_client import make_wsgi_app
 from werkzeug.middleware.dispatcher import DispatcherMiddleware
 import os
+from app.logging_config import configure_logging
 
 def create_app():
     app = Flask(__name__)
@@ -23,5 +24,8 @@ def create_app():
     # Register the blueprints
     from app.routes import api_bp
     app.register_blueprint(api_bp)
+    
+    # Configure logging
+    configure_logging(app)
     
     return app

@@ -25,20 +25,14 @@ jobs:
           cd backend
           PYTHONPATH=$PYTHONPATH:$(pwd) pytest
 
-  build-and-push:
+  deploy-to-render:
     needs: test-backend
     runs-on: ubuntu-latest
-    if: github.event_name == 'push'
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
     steps:
-      - uses: actions/checkout@v2
-      - name: Build Docker image
-        run: docker-compose build
-      - name: Log in to Docker Hub
-        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
-        uses: docker/login-action@v1
+      - name: Deploy to Render
+        uses: JorgeLNJunior/render-deploy@v1.3.2
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-      - name: Push to Docker Hub
-        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
-        run: docker-compose push
+          service_id: ${{ secrets.RENDER_SERVICE_ID }}
+          api_key: ${{ secrets.RENDER_API_KEY }}
+          clear_cache: false

@@ -2,11 +2,12 @@ FROM python:3.9-slim
 
 WORKDIR /app
 
-COPY requirements.txt .
+# Since we're building from the backend directory, requirements.txt is in the current directory
+COPY backend/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the application
-COPY . .
+# Copy the backend application
+COPY backend/ .
 
 ENV FLASK_APP=run.py
 ENV FLASK_ENV=production

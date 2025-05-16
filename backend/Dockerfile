@@ -5,11 +5,12 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Copy the application
 COPY . .
 
 ENV FLASK_APP=run.py
 ENV FLASK_ENV=production
-ENV SECRET_KEY=production_key_site_monitor
+ENV SECRET_KEY=default_key_change_in_production
 
 EXPOSE 5000
 

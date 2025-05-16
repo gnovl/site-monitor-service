@@ -7,57 +7,11 @@
     <meta name="theme-color" content="#000000" />
     <meta name="description" content="Site Monitor Pro - DevOps Demo Project" />
     <title>{% block title %}Site Monitor Pro{% endblock %}</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Add custom CSS -->
-    <style>
-      body {
-        margin: 0;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
-          "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
-          "Helvetica Neue", sans-serif;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-      }
-
-      code {
-        font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-          monospace;
-      }
-
-      /* Custom scrollbar for better UX */
-      ::-webkit-scrollbar {
-        width: 8px;
-        height: 8px;
-      }
-
-      ::-webkit-scrollbar-track {
-        background: #f1f1f1;
-      }
-
-      ::-webkit-scrollbar-thumb {
-        background: #888;
-        border-radius: 4px;
-      }
-
-      ::-webkit-scrollbar-thumb:hover {
-        background: #555;
-      }
-
-      /* Add smooth transitions to buttons and interactive elements */
-      button {
-        transition: all 0.2s ease-in-out;
-      }
-
-      /* Add subtle hover effect to table rows */
-      tbody tr {
-        transition: background-color 0.2s;
-      }
-
-      tbody tr:hover {
-        background-color: rgba(243, 244, 246, 0.5);
-      }
-    </style>
+    <!-- Tailwind CSS - compiled version -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/main.css') }}"
+    />
     {% block head %}{% endblock %}
   </head>
   <body class="min-h-screen bg-gray-50 flex flex-col">
@@ -70,13 +24,13 @@
             <p class="ml-4 text-gray-500">Monitor your websites in real-time</p>
           </div>
           <div class="flex space-x-3">
-            <a
-              href="{{ url_for('api.add_site') }}"
+            <button
+              id="addSiteBtn"
               class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gray-900 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
             >
               {% if sites_count == 0 %}Add Your First Site{% else %}Add New
               Site{% endif %}
-            </a>
+            </button>
           </div>
         </div>
       </div>
@@ -97,6 +51,182 @@
         </p>
       </div>
     </footer>
+
+    <!-- Add Site Modal -->
+    <div id="addSiteModal" class="modal">
+      <div class="modal-content p-6">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-lg font-medium">
+            {% if sites_count == 0 %}Add Your First Site{% else %}Add a New Site
+            to Monitor{% endif %}
+          </h2>
+          <button id="closeModalBtn" class="text-gray-500 hover:text-gray-700">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+        </div>
+
+        <div
+          id="modalError"
+          class="mb-6 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-md hidden"
+        >
+          <span id="errorMessage"></span>
+          <button
+            onclick="this.parentElement.classList.add('hidden')"
+            class="float-right font-bold"
+          >
+            &times;
+          </button>
+        </div>
+
+        <form id="addSiteForm" class="space-y-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700">URL</label>
+              <input
+                type="url"
+                name="url"
+                required
+                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-gray-500 focus:border-gray-500"
+                placeholder="https://example.com"
+              />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700"
+                >Name (optional)</label
+              >
+              <input
+                type="text"
+                name="name"
+                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-gray-500 focus:border-gray-500"
+                placeholder="My Website"
+              />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700"
+                >Check Interval (seconds)</label
+              >
+              <input
+                type="number"
+                name="check_interval"
+                min="10"
+                value="60"
+                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-gray-500 focus:border-gray-500"
+              />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700"
+                >Response Time Threshold (ms)</label
+              >
+              <input
+                type="number"
+                name="response_time_threshold"
+                min="100"
+                value="1000"
+                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-gray-500 focus:border-gray-500"
+                title="Warning will be shown if response time exceeds this value"
+              />
+            </div>
+          </div>
+
+          <div class="flex justify-end">
+            <button
+              type="button"
+              id="cancelAddSite"
+              class="mr-3 inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gray-900 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+            >
+              {% if sites_count == 0 %}Add First Site{% else %}Add Site{% endif
+              %}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal Script -->
+    <script>
+      // Modal elements
+      const modal = document.getElementById("addSiteModal");
+      const addSiteBtn = document.getElementById("addSiteBtn");
+      const closeModalBtn = document.getElementById("closeModalBtn");
+      const cancelAddSiteBtn = document.getElementById("cancelAddSite");
+      const addSiteForm = document.getElementById("addSiteForm");
+      const modalError = document.getElementById("modalError");
+      const errorMessage = document.getElementById("errorMessage");
+
+      // Open modal
+      addSiteBtn.addEventListener("click", function () {
+        modal.style.display = "block";
+      });
+
+      // Close modal
+      function closeModal() {
+        modal.style.display = "none";
+        modalError.classList.add("hidden");
+        addSiteForm.reset();
+      }
+
+      closeModalBtn.addEventListener("click", closeModal);
+      cancelAddSiteBtn.addEventListener("click", closeModal);
+
+      // Close modal if clicked outside
+      window.addEventListener("click", function (event) {
+        if (event.target === modal) {
+          closeModal();
+        }
+      });
+
+      // Form submission
+      addSiteForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        const formData = new FormData(addSiteForm);
+
+        fetch('{{ url_for("api.add_site") }}', {
+          method: "POST",
+          body: formData,
+        })
+          .then((response) => {
+            if (!response.ok) {
+              return response.text().then((text) => {
+                throw new Error(text);
+              });
+            }
+            return response.text();
+          })
+          .then(() => {
+            // Reload the page to show the new site
+            window.location.href = '{{ url_for("api.index") }}';
+          })
+          .catch((error) => {
+            // Show error message
+            errorMessage.textContent =
+              error.message || "Error adding site. Please try again.";
+            modalError.classList.remove("hidden");
+          });
+      });
+    </script>
 
     {% block scripts %}{% endblock %}
   </body>

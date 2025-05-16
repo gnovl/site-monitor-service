@@ -86,14 +86,27 @@ def add_site():
         
         if not url:
             error = "URL is required"
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return error, 400
+            else:
+                return render_template('add_site.html', error=error, sites_count=sites_count, current_year=datetime.now().year)
         else:
             try:
                 check_interval = int(check_interval)
                 site = service_add_site(url, name, check_interval)
-                return redirect(url_for('api.index'))
+                
+                if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                    return "Site added successfully", 200
+                else:
+                    return redirect(url_for('api.index'))
             except Exception as e:
                 error = f"Error adding site: {str(e)}"
+                if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                    return error, 400
+                else:
+                    return render_template('add_site.html', error=error, sites_count=sites_count, current_year=datetime.now().year)
     
+    # GET request - render the add_site page
     return render_template('add_site.html', 
                           error=error, 
                           sites_count=sites_count,
@@ -122,6 +135,7 @@ def check_site_route(site_id):
     if not site:
         return redirect(url_for('api.index', error="Site not found"))
     
+    # Use the service to check only this specific site
     service_check_site(site)
     return redirect(url_for('api.site_details', site_id=site_id))
 
@@ -137,7 +151,14 @@ def delete_site(site_id):
 @api_bp.route('/api/sites', methods=['GET'])
 def get_sites_api():
     sites = get_all_sites()
-    return jsonify([site.to_dict() for site in sites])
+    response = []
+    
+    for site in sites:
+        site_dict = site.to_dict()
+        site_dict['last_checked_formatted'] = format_last_checked(site.last_checked) if site.last_checked else None
+        response.append(site_dict)
+    
+    return jsonify(response)
 
 @api_bp.route('/api/sites', methods=['POST'])
 def create_site_api():
@@ -159,7 +180,11 @@ def get_single_site_api(site_id):
     if not site:
         return jsonify({"error": "Site not found"}), 404
     
-    return jsonify(site.to_dict())
+    # Get the site dictionary and add the formatted last checked time
+    site_dict = site.to_dict()
+    site_dict['last_checked_formatted'] = format_last_checked(site.last_checked) if site.last_checked else None
+    
+    return jsonify(site_dict)
 
 @api_bp.route('/api/sites/<int:site_id>', methods=['PUT'])
 def update_single_site_api(site_id):
@@ -190,8 +215,14 @@ def check_single_site_api(site_id):
     if not site:
         return jsonify({"error": "Site not found"}), 404
     
+    # Use the service to check only this specific site
     service_check_site(site)
-    return jsonify(site.to_dict())
+    
+    # Get formatted last checked time for the response
+    site_dict = site.to_dict()
+    site_dict['last_checked_formatted'] = format_last_checked(site.last_checked) if site.last_checked else None
+    
+    return jsonify(site_dict)
 
 @api_bp.route('/health', methods=['GET'])
 def health_check():

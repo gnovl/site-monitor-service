@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: site-monitor-pro
+    env: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: FLASK_ENV
+        value: production
+    disk:
+      name: site-monitor-data
+      mountPath: /data
+      sizeGB: 1

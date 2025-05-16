@@ -2,7 +2,10 @@ version: "3.8"
 
 services:
   app:
-    build: ./backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: ${DOCKER_USERNAME:-yourusername}/site-monitor-app:latest
     restart: unless-stopped
     ports:
       - "80:5000"
@@ -16,6 +19,8 @@ services:
       retries: 3
     volumes:
       - ./backend:/app
+      - ./backend/app/templates:/app/app/templates
+      - /app/node_modules # Don't override node_modules with the host volume
 
   prometheus:
     image: prom/prometheus:latest

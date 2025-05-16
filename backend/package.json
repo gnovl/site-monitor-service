@@ -1,0 +1,25 @@
+{
+  "name": "site-monitor-pro",
+  "version": "1.0.0",
+  "description": "Site Monitor Pro - DevOps Demo Project",
+  "main": "index.js",
+  "scripts": {
+    "build:css": "tailwindcss -i ./app/static/css/tailwind.css -o ./app/static/css/main.css --minify",
+    "watch:css": "tailwindcss -i ./app/static/css/tailwind.css -o ./app/static/css/main.css --watch",
+    "build": "npm run build:css",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "site-monitor",
+    "devops",
+    "flask"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "autoprefixer": "^10.4.14",
+    "postcss": "^8.4.23",
+    "postcss-cli": "^10.1.0",
+    "tailwindcss": "^3.3.2"
+  }
+}

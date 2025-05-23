@@ -1,8 +1,9 @@
-from flask import Blueprint, jsonify, request, render_template, redirect, url_for, flash
+from flask import Blueprint, jsonify, request, render_template, redirect, url_for, flash, current_app
 from app.services import add_site as service_add_site, get_site, get_all_sites, delete_site as service_delete_site, update_site, check_site as service_check_site
 from datetime import datetime
 import json
 from urllib.parse import quote
+from flasgger import swag_from
 
 api_bp = Blueprint('api', __name__, template_folder='templates')
 
@@ -147,8 +148,34 @@ def delete_site(site_id):
     
     return redirect(url_for('api.index'))
 
-# API routes for backwards compatibility
+# API routes with Swagger documentation
 @api_bp.route('/api/sites', methods=['GET'])
+@swag_from({
+    'tags': ['Sites'],
+    'summary': 'Get all monitored sites',
+    'description': 'Returns a list of all sites being monitored',
+    'responses': {
+        200: {
+            'description': 'List of monitored sites',
+            'schema': {
+                'type': 'array',
+                'items': {
+                    'type': 'object',
+                    'properties': {
+                        'id': {'type': 'integer'},
+                        'url': {'type': 'string'},
+                        'name': {'type': 'string'},
+                        'check_interval': {'type': 'integer'},
+                        'status': {'type': 'string'},
+                        'response_time': {'type': 'number'},
+                        'last_checked': {'type': 'string'},
+                        'last_checked_formatted': {'type': 'string'}
+                    }
+                }
+            }
+        }
+    }
+})
 def get_sites_api():
     sites = get_all_sites()
     response = []
@@ -161,6 +188,34 @@ def get_sites_api():
     return jsonify(response)
 
 @api_bp.route('/api/sites', methods=['POST'])
+@swag_from({
+    'tags': ['Sites'],
+    'summary': 'Add a new site to monitor',
+    'description': 'Adds a new site to the monitoring list',
+    'parameters': [
+        {
+            'name': 'site',
+            'in': 'body',
+            'schema': {
+                'type': 'object',
+                'required': ['url'],
+                'properties': {
+                    'url': {'type': 'string', 'description': 'URL to monitor'},
+                    'name': {'type': 'string', 'description': 'Custom name for the site (optional)'},
+                    'check_interval': {'type': 'integer', 'description': 'Check interval in seconds (optional, default 60)'}
+                }
+            }
+        }
+    ],
+    'responses': {
+        201: {
+            'description': 'Site added successfully'
+        },
+        400: {
+            'description': 'Invalid input'
+        }
+    }
+})
 def create_site_api():
     data = request.get_json()
     
@@ -171,8 +226,13 @@ def create_site_api():
     name = data.get('name')
     check_interval = data.get('check_interval', 60)
     
-    site = service_add_site(url, name, check_interval)
-    return jsonify(site.to_dict()), 201
+    try:
+        site = service_add_site(url, name, check_interval)
+        current_app.logger.info(f"New site added: {url}")
+        return jsonify(site.to_dict()), 201
+    except Exception as e:
+        current_app.logger.error(f"Error adding site: {str(e)}")
+        return jsonify({"error": str(e)}), 400
 
 @api_bp.route('/api/sites/<int:site_id>', methods=['GET'])
 def get_single_site_api(site_id):
@@ -189,17 +249,23 @@ def get_single_site_api(site_id):
 @api_bp.route('/api/sites/<int:site_id>', methods=['PUT'])
 def update_single_site_api(site_id):
     data = request.get_json()
-    site = update_site(
-        site_id,
-        url=data.get('url'),
-        name=data.get('name'),
-        check_interval=data.get('check_interval')
-    )
     
-    if not site:
-        return jsonify({"error": "Site not found"}), 404
-    
-    return jsonify(site.to_dict())
+    try:
+        site = update_site(
+            site_id,
+            url=data.get('url'),
+            name=data.get('name'),
+            check_interval=data.get('check_interval')
+        )
+        
+        if not site:
+            return jsonify({"error": "Site not found"}), 404
+        
+        current_app.logger.info(f"Site {site_id} updated")
+        return jsonify(site.to_dict())
+    except Exception as e:
+        current_app.logger.error(f"Error updating site {site_id}: {str(e)}")
+        return jsonify({"error": str(e)}), 400
 
 @api_bp.route('/api/sites/<int:site_id>', methods=['DELETE'])
 def delete_single_site_api(site_id):
@@ -207,6 +273,7 @@ def delete_single_site_api(site_id):
     if not success:
         return jsonify({"error": "Site not found"}), 404
     
+    current_app.logger.info(f"Site {site_id} deleted")
     return jsonify({"message": "Site deleted successfully"})
 
 @api_bp.route('/api/sites/<int:site_id>/check', methods=['POST'])
@@ -222,6 +289,8 @@ def check_single_site_api(site_id):
     site_dict = site.to_dict()
     site_dict['last_checked_formatted'] = format_last_checked(site.last_checked) if site.last_checked else None
     
+    current_app.logger.info(f"Site {site_id} checked manually")
+    
     return jsonify(site_dict)
 
 @api_bp.route('/health', methods=['GET'])
@@ -231,13 +300,9 @@ def health_check():
 @api_bp.route('/healthz', methods=['GET'])
 def detailed_health_check():
     """Detailed health check endpoint for Kubernetes and other cloud platforms."""
-    # Check database connection if you have one
-    # Check external services if you depend on any
-    
-    # You can add more checks here as your application grows
     health_data = {
         "status": "healthy",
-        "version": "1.0.0",
+        "version": current_app.config.get('APP_VERSION', '0.1.0'),
         "timestamp": datetime.now().isoformat(),
         "checks": {
             "app": "ok",

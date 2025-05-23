@@ -1,10 +1,70 @@
 # Site Monitor Pro - DevOps Showcase
 
 [![Site Monitor Pro CI/CD](https://github.com/gnovl/site-monitor-service/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/gnovl/site-monitor-service/actions/workflows/ci-cd.yml)
+[![Code Coverage](https://codecov.io/gh/yourusername/site-monitor-pro/branch/main/graph/badge.svg)](https://codecov.io/gh/yourusername/site-monitor-pro)
+[![Security Scan](https://img.shields.io/badge/security-scanned-green.svg)](https://github.com/yourusername/site-monitor-pro/security/code-scanning)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-A modern DevOps project that demonstrates a complete deployment pipeline for a site monitoring service with a simple Python Flask application.
+A comprehensive DevOps showcase project that demonstrates a complete deployment pipeline for a site monitoring service with a Python Flask application.
 
-## Features
+## 🚀 DevOps Practices Demonstrated
+
+This project showcases a wide range of DevOps practices and technologies:
+
+### Infrastructure as Code (IaC)
+
+- **Terraform** for provisioning cloud infrastructure on AWS
+- **Kubernetes manifests** for container orchestration
+- **Helm charts** for Kubernetes package management with multi-environment support
+
+### CI/CD Pipeline
+
+- **GitHub Actions** workflow with comprehensive stages:
+  - Testing
+  - Security scanning
+  - Building & pushing Docker images
+  - Multi-environment deployments (dev, staging, production)
+  - Release management
+
+### DevSecOps Integration
+
+- **Dependency vulnerability scanning** with Safety
+- **Static Application Security Testing (SAST)** with Bandit
+- **Container vulnerability scanning** with Trivy
+- **Security-focused configuration** across environments
+
+### Containerization
+
+- **Docker** for application containerization
+- **Docker Compose** for local development
+- **Multi-stage Docker builds** for optimized images
+
+### Configuration Management
+
+- **Environment-specific configurations** with proper separation of concerns
+- **Secret management** integration
+- **Feature flags** based on environment
+
+### Observability
+
+- **Prometheus** for metrics collection
+- **Grafana** for metrics visualization and dashboards
+- **Structured JSON logging** for better log processing
+- **Distributed tracing** with OpenTelemetry
+
+### Deployment Strategies
+
+- **Multi-environment deployment** (dev, staging, production)
+- **Kubernetes-based deployment** with proper resource management
+- **Rolling updates** for zero-downtime deployments
+
+### Documentation
+
+- **API documentation** with Swagger/OpenAPI
+- **Infrastructure documentation** with diagrams
+- **Runbook automation** via Makefile
+
+## 📋 Features
 
 - **Real-time Monitoring:** Track website availability and performance
 - **Custom Site Management:** Add, remove, and check custom sites on demand
@@ -12,83 +72,190 @@ A modern DevOps project that demonstrates a complete deployment pipeline for a s
 - **API Endpoints:** Full RESTful API for programmatic access
 - **Prometheus Integration:** Advanced metrics collection
 - **Grafana Dashboards:** Pre-configured visualization dashboards
-- **Docker Deployment:** Containerized for easy deployment
-- **CI/CD Pipeline:** GitHub Actions workflows included
+- **Multi-environment Support:** Configurations for dev, staging, and production
 
-## DevOps Skills Demonstrated
+## 🛠️ Technology Stack
 
-- **Containerization** with Docker and Docker Compose
-- **Continuous Integration/Continuous Deployment** with GitHub Actions
-- **Monitoring and Observability** with Prometheus and Grafana
-- **Infrastructure as Code** with Terraform
-- **Automated Testing** with Pytest
-- **Application Deployment** to cloud providers
-- **Web Application** built with Python Flask and Jinja2 templates
+- **Backend:** Python Flask
+- **Containerization:** Docker, Docker Compose
+- **CI/CD:** GitHub Actions
+- **Infrastructure as Code:** Terraform, Kubernetes, Helm
+- **Monitoring:** Prometheus, Grafana
+- **Observability:** OpenTelemetry, Structured Logging
+- **Security:** Bandit, Safety, Trivy
+- **API Documentation:** Swagger/OpenAPI
 
-## Getting Started
+## 🏗️ Architecture
+
+The application follows a microservices architecture pattern:
+
+```
+                             ┌─────────────┐
+                             │   Ingress   │
+                             └──────┬──────┘
+                                    │
+                             ┌──────▼──────┐
+                             │ Site Monitor │
+                             │  Service    │
+                             └──────┬──────┘
+                                    │
+              ┌───────────┬─────────┴─────────┬───────────┐
+              │           │                   │           │
+      ┌───────▼──────┐   ┌▼─────────────┐    ┌▼────────┐  ┌▼────────────┐
+      │  Prometheus  │   │   Grafana    │    │ Tracing │  │ Kubernetes  │
+      │              │   │              │    │ Collector│  │ API         │
+      └──────────────┘   └──────────────┘    └─────────┘  └─────────────┘
+```
+
+## 🚀 Getting Started
 
 ### Prerequisites
 
 - Docker and Docker Compose
-- Git
+- kubectl for Kubernetes deployment
+- Helm for Kubernetes package management
+- Terraform for infrastructure provisioning
+- AWS CLI (if deploying to AWS)
 
-### Running Locally
+### Local Development
 
 1. Clone the repository:
 
-   ```
-   git clone https://github.com/gnovl/site-monitor-service.git
+   ```bash
+   git clone https://github.com/yourusername/site-monitor-pro.git
    cd site-monitor-pro
    ```
 
-2. Start the application:
+2. Start the application using Docker Compose:
 
+   ```bash
+   make run-docker
    ```
-   docker-compose up -d
+
+   Alternatively, run the application locally:
+
+   ```bash
+   cd backend
+   pip install -r requirements.txt
+   python run.py
    ```
 
 3. Access the services:
-   - Site Monitor UI: http://localhost
+   - Site Monitor UI: http://localhost:80
    - Prometheus: http://localhost:9090
    - Grafana: http://localhost:3000 (default credentials: admin/password)
+   - API Documentation: http://localhost:5000/docs/
 
-## Deployment
+### Development Workflow
 
-This project includes Terraform configurations for deploying to AWS:
+```bash
+# Run tests
+make test
 
-1. Navigate to terraform directory:
+# Run linting
+make lint
 
-   ```
-   cd terraform
-   ```
+# Format code
+make format
 
-2. Initialize terraform:
+# Run security checks
+make security
 
-   ```
-   terraform init
-   ```
+# Build Docker image
+make docker-build
+```
 
-3. Plan and apply the infrastructure:
-   ```
-   terraform plan
-   terraform apply
-   ```
+## 🌐 Deployment
 
-## Project Structure
+### Infrastructure Provisioning with Terraform
 
-- `/backend` - Python Flask application
-- `/monitoring` - Prometheus and Grafana configurations
-- `/terraform` - Infrastructure as Code
-- `/.github/workflows` - CI/CD pipelines
+```bash
+# Initialize Terraform
+make terraform-init
 
-## Backend Application
+# Create execution plan
+make terraform-plan AWS_REGION=us-east-1 ENV=dev
 
-The backend is a Flask application that provides:
+# Apply changes
+make terraform-apply AWS_REGION=us-east-1 ENV=dev
+```
 
-- Web interface for monitoring sites
-- RESTful API for managing monitored sites
+### Kubernetes Deployment with Helm
 
-### API Endpoints
+```bash
+# Deploy to development environment
+make deploy-dev
+
+# Deploy to staging environment
+make deploy-staging
+
+# Deploy to production environment
+make deploy-prod
+```
+
+## 📦 CI/CD Pipeline
+
+The project includes a comprehensive CI/CD pipeline using GitHub Actions:
+
+1. **Pull Request/Commit Stage:**
+
+   - Run tests
+   - Code linting
+   - Security scanning
+
+2. **Build Stage:**
+
+   - Build Docker image
+   - Push to Docker registry
+
+3. **Deployment Stages:**
+   - Deploy to development (on commit to develop branch)
+   - Deploy to staging (on commit to main branch)
+   - Deploy to production (on tagged release)
+
+## 📊 Monitoring and Observability
+
+### Metrics
+
+The application exposes Prometheus metrics at `/metrics` endpoint:
+
+- Response time histograms by site
+- Availability (up/down) metrics by site
+- Request count by status code
+
+### Dashboards
+
+Pre-configured Grafana dashboards provide insights into:
+
+- Site uptime and response time trends
+- Status code distribution
+- Error rates and alerts
+
+### Logging
+
+Structured JSON logs include:
+
+- Request/response details
+- Site monitoring events
+- System events
+- Correlation IDs for distributed tracing
+
+## 🔒 Security
+
+The project implements several security best practices:
+
+- Regular dependency vulnerability scanning
+- Static application security testing (SAST)
+- Container image scanning
+- Secure configuration across environments
+- Rate limiting protection
+- Proper secret management
+
+## 📚 API Documentation
+
+The REST API is documented using Swagger/OpenAPI and available at `/docs/` endpoint.
+
+Key endpoints:
 
 - `GET /api/sites` - List all monitored sites
 - `POST /api/sites` - Add a new site to monitor
@@ -97,70 +264,10 @@ The backend is a Flask application that provides:
 - `DELETE /api/sites/{id}` - Remove a site from monitoring
 - `POST /api/sites/{id}/check` - Manually trigger a site check
 
-### Web Interface
+## 🤝 Contributing
 
-- `/` - Dashboard showing all monitored sites
-- `/add` - Form to add a new site
-- `/site/{id}` - Details for a specific site
-- `/site/{id}/check` - Manually trigger a site check
-- `/site/{id}/delete` - Remove a site from monitoring
+Contributions are welcome! Please check out our [Contributing Guide](CONTRIBUTING.md) for details.
 
-## Monitoring Setup
+## 📝 License
 
-### Prometheus
-
-Prometheus collects metrics from the application, including:
-
-- Site response times
-- Site availability (up/down status)
-- Request counts by status code
-
-### Grafana
-
-Pre-configured Grafana dashboards visualize the metrics collected by Prometheus:
-
-- Site uptime dashboard
-- Response time trends
-- Status code distribution
-
-## CI/CD Pipeline
-
-The GitHub Actions workflows handle:
-
-- Running tests on every commit
-- Building Docker images
-- Publishing Docker images to DockerHub (on tagged releases)
-- Deploying to AWS (on tagged releases)
-
-## Troubleshooting
-
-### Common Issues
-
-1. **Application failing to start**
-
-   - Check for compatible Flask and Werkzeug versions in requirements.txt
-   - Ensure all Python dependencies are correctly installed
-
-2. **Prometheus or Grafana issues**
-   - Ensure volumes are properly mounted
-   - Check configuration files for correct targets
-
-### Docker Commands
-
-Useful Docker commands for troubleshooting:
-
-```
-# View logs for a specific service
-docker-compose logs app
-docker-compose logs prometheus
-
-# Restart a specific service
-docker-compose restart app
-
-# Rebuild services
-docker-compose build --no-cache
-```
-
-## License
-
-MIT
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

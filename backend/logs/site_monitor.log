@@ -1,0 +1,11 @@
+{"timestamp": "2025-05-23T12:49:20.581290", "level": "INFO", "name": "app", "message": "Site Monitor Pro startup", "event": "app_startup", "version": "unknown", "logger": "app", "app": "site-monitor-pro", "environment": "production"}
+{"timestamp": "2025-05-23T12:49:20.584682", "level": "INFO", "name": "app", "message": "API documentation initialized at /docs/", "logger": "app", "app": "site-monitor-pro", "environment": "production"}
+{"timestamp": "2025-05-23T12:49:20.585654", "level": "INFO", "name": "app", "message": "Site Monitor Pro started in production environment (v0.1.0)", "logger": "app", "app": "site-monitor-pro", "environment": "production"}
+{"timestamp": "2025-05-23T12:54:32.830622", "level": "INFO", "name": "app", "message": "Site 1 checked manually", "logger": "app", "app": "site-monitor-pro", "environment": "production"}
+{"timestamp": "2025-05-23T14:00:05.545811", "level": "INFO", "name": "app", "message": "Site 2 checked manually", "logger": "app", "app": "site-monitor-pro", "environment": "production"}
+{"timestamp": "2025-05-23T14:03:48.253181", "level": "INFO", "name": "app", "message": "Site Monitor Pro startup", "event": "app_startup", "version": "unknown", "logger": "app", "app": "site-monitor-pro", "environment": "production"}
+{"timestamp": "2025-05-23T14:03:48.255524", "level": "INFO", "name": "app", "message": "API documentation initialized at /docs/", "logger": "app", "app": "site-monitor-pro", "environment": "production"}
+{"timestamp": "2025-05-23T14:03:48.256049", "level": "INFO", "name": "app", "message": "Site Monitor Pro started in production environment (v0.1.0)", "logger": "app", "app": "site-monitor-pro", "environment": "production"}
+{"timestamp": "2025-05-23T14:07:39.125352", "level": "INFO", "name": "app", "message": "Site 1 checked manually", "logger": "app", "app": "site-monitor-pro", "environment": "production"}
+{"timestamp": "2025-05-23T14:08:38.632711", "level": "INFO", "name": "app", "message": "Site 1 checked manually", "logger": "app", "app": "site-monitor-pro", "environment": "production"}
+{"timestamp": "2025-05-23T14:09:16.045801", "level": "INFO", "name": "app", "message": "Site 3 checked manually", "logger": "app", "app": "site-monitor-pro", "environment": "production"}

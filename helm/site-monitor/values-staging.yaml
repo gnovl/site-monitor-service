@@ -1,0 +1,52 @@
+# Staging environment values
+replicaCount: 2
+
+# Use staging tag
+image:
+  tag: staging
+
+service:
+  type: ClusterIP
+
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-staging
+  hosts:
+    - host: staging.site-monitor.example.com
+      paths: ["/"]
+  tls:
+    - secretName: site-monitor-staging-tls
+      hosts:
+        - staging.site-monitor.example.com
+
+# Moderate resource requirements for staging
+resources:
+  limits:
+    cpu: 300m
+    memory: 384Mi
+  requests:
+    cpu: 75m
+    memory: 96Mi
+
+# Application configuration for staging
+appConfig:
+  env: staging
+  logLevel: INFO
+  defaultCheckInterval: 60
+  minCheckInterval: 20
+  responseTimeThreshold: 1000
+  enableRateLimiting: true
+
+# Use persistent storage in staging but smaller size
+prometheus:
+  server:
+    persistentVolume:
+      enabled: true
+      size: 4Gi
+
+grafana:
+  persistence:
+    enabled: true
+    size: 2Gi

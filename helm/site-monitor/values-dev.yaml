@@ -1,0 +1,46 @@
+# Development environment values
+replicaCount: 1
+
+# Use dev tag for development
+image:
+  tag: dev
+
+service:
+  type: ClusterIP
+
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: nginx
+  hosts:
+    - host: site-monitor.dev.local
+      paths: ["/"]
+  tls: []
+
+# Smaller resource requirements for development
+resources:
+  limits:
+    cpu: 200m
+    memory: 256Mi
+  requests:
+    cpu: 50m
+    memory: 64Mi
+
+# Application configuration for development
+appConfig:
+  env: development
+  logLevel: DEBUG
+  defaultCheckInterval: 30
+  minCheckInterval: 10
+  responseTimeThreshold: 1000
+  enableRateLimiting: false
+
+# Use ephemeral storage in development
+prometheus:
+  server:
+    persistentVolume:
+      enabled: false
+
+grafana:
+  persistence:
+    enabled: false

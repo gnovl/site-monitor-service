@@ -7,3 +7,6 @@ gunicorn==20.1.0
 Flask-Cors==3.0.10
 Werkzeug==2.0.1
 Jinja2==3.0.3
+python-json-logger==2.0.7
+flasgger==0.9.5
+Flask-Limiter==3.3.1

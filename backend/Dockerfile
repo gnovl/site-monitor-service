@@ -3,13 +3,13 @@ FROM python:3.9-slim
 WORKDIR /app
 
 # Copy requirements file
-COPY requirements.txt .
+COPY backend/requirements.txt .
 
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the application code
-COPY . .
+# Copy the application code from backend directory
+COPY backend/ .
 
 # Set environment variables
 ENV FLASK_APP=run.py

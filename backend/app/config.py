@@ -25,9 +25,9 @@ class Config:
     CACHE_TYPE = "SimpleCache"
     CACHE_DEFAULT_TIMEOUT = 300  # 5 minutes
     
-    # Rate limiting
+    # Rate limiting - more generous defaults for cloud platforms
     RATELIMIT_ENABLED = True
-    RATELIMIT_DEFAULT = "100/hour"
+    RATELIMIT_DEFAULT = "1000/hour"  # Increased default limit
     
     @classmethod
     def init_app(cls, app):
@@ -51,8 +51,8 @@ class TestingConfig(Config):
 
 class ProductionConfig(Config):
     """Production environment configuration."""
-    # Add production-specific settings
-    RATELIMIT_DEFAULT = "300/hour"  # Higher limit for production
+    # More generous rate limiting for production with cloud health checks
+    RATELIMIT_DEFAULT = "2000/hour"  # Higher limit for production to handle health checks
     
     # More conservative settings for production
     MIN_CHECK_INTERVAL = int(os.environ.get('MIN_CHECK_INTERVAL', '30'))  # More conservative min interval

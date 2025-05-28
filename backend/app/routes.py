@@ -293,13 +293,17 @@ def check_single_site_api(site_id):
     
     return jsonify(site_dict)
 
+# Health check endpoints - EXEMPT from rate limiting
 @api_bp.route('/health', methods=['GET'])
 def health_check():
+    """Simple health check endpoint for load balancers and monitoring systems.
+    This endpoint is exempt from rate limiting to allow frequent health checks."""
     return jsonify({"status": "healthy"})
 
 @api_bp.route('/healthz', methods=['GET'])
 def detailed_health_check():
-    """Detailed health check endpoint for Kubernetes and other cloud platforms."""
+    """Detailed health check endpoint for Kubernetes and other cloud platforms.
+    This endpoint is exempt from rate limiting to allow frequent health checks."""
     health_data = {
         "status": "healthy",
         "version": current_app.config.get('APP_VERSION', '0.1.0'),

@@ -24,10 +24,18 @@ except ImportError:
 # Create limiter for rate limiting if available
 limiter = None
 if LIMITER_AVAILABLE:
+    def is_health_check():
+        """Function to identify health check endpoints that should be exempt from rate limiting"""
+        from flask import request
+        # Check if the current request is to a health check endpoint
+        return request.endpoint in ['api.health_check', 'api.detailed_health_check']
+    
     limiter = Limiter(
         key_func=get_remote_address,
         default_limits=["100 per hour"],
-        storage_uri="memory://"
+        storage_uri="memory://",
+        # Exempt health check endpoints from rate limiting
+        exempt_when=is_health_check
     )
 
 def create_app(config_name=None):
@@ -42,7 +50,7 @@ def create_app(config_name=None):
     # Initialize rate limiting if available
     if limiter and app.config.get('RATELIMIT_ENABLED', True):
         limiter.init_app(app)
-        app.logger.info(f"Rate limiting enabled: {app.config.get('RATELIMIT_DEFAULT')}")
+        app.logger.info(f"Rate limiting enabled: {app.config.get('RATELIMIT_DEFAULT')} (health checks exempt)")
     
     # Add prometheus wsgi middleware to route /metrics requests
     app.wsgi_app = DispatcherMiddleware(app.wsgi_app, {
@@ -84,7 +92,7 @@ def create_app(config_name=None):
                 "version": app.config.get('APP_VERSION', '0.1.0'),
                 "contact": {
                     "name": "DevOps Team",
-                    "url": "https://github.com/yourusername/site-monitor-pro",
+                    "url": "https://github.com/gnovl/site-monitor-service",
                 },
             }
         }

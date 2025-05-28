@@ -5,6 +5,14 @@ import json
 from urllib.parse import quote
 from flasgger import swag_from
 
+# Import limiter to exempt specific routes
+try:
+    from app import limiter
+    LIMITER_AVAILABLE = True
+except ImportError:
+    LIMITER_AVAILABLE = False
+    limiter = None
+
 api_bp = Blueprint('api', __name__, template_folder='templates')
 
 # Format the last checked time in a user-friendly way
@@ -315,3 +323,8 @@ def detailed_health_check():
     }
     
     return jsonify(health_data)
+
+# Apply exemption to health check endpoints after the blueprint is created
+if LIMITER_AVAILABLE and limiter:
+    limiter.exempt(health_check)
+    limiter.exempt(detailed_health_check)

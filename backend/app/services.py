@@ -4,6 +4,7 @@ from datetime import datetime
 from prometheus_client import Counter, Gauge, Histogram
 import threading
 import logging
+from collections import deque
 
 # Setup logging
 logging.basicConfig(level=logging.INFO, 
@@ -20,25 +21,56 @@ sites = {}
 site_id_counter = 1
 monitoring_threads = {}  # Keep track of monitoring threads
 site_lock = threading.RLock()  # For thread-safe access to sites dictionary
+site_history = {}  # Store history for each site
 
 def check_site(site):
-    """Check a site's status and update its metrics."""
+    """Check a site's status and update its metrics. Each call should add exactly 1 history entry."""
     start_time = time.time()
+    
+    logger.info(f"Starting check for site {site.id}: {site.url}")
+    
+    # Get current history count before check
+    with site_lock:
+        if site.id not in sites:
+            logger.warning(f"Site {site.id} no longer exists, canceling check")
+            return False
+        
+        pre_check_count = len(site_history.get(site.id, []))
+        logger.info(f"Site {site.id} has {pre_check_count} history entries before check")
+    
     try:
-        logger.info(f"Checking site {site.id}: {site.url}")
         response = requests.get(site.url, timeout=10)
         response_time = time.time() - start_time
         status_code = response.status_code
         
         with site_lock:
             if site.id not in sites:
-                logger.warning(f"Site {site.id} no longer exists, canceling check")
-                return False  # Site was deleted
+                logger.warning(f"Site {site.id} no longer exists during check, canceling")
+                return False
             
+            # Update site status
             site.status = f"OK ({status_code})" if response.ok else f"Error ({status_code})"
             site.response_time = round(response_time * 1000, 2)  # Convert to ms
             site.last_checked = datetime.now().isoformat()
-            logger.info(f"Site {site.id} checked: {site.status}, response time: {site.response_time}ms")
+            
+            # Ensure history exists for this site
+            if site.id not in site_history:
+                site_history[site.id] = deque(maxlen=50)
+                logger.warning(f"History was missing for site {site.id}, recreated")
+            
+            # Add exactly ONE history entry
+            add_to_history(site.id, site.status, site.response_time)
+            
+            # Verify history count increased by exactly 1
+            post_check_count = len(site_history[site.id])
+            expected_count = pre_check_count + 1
+            
+            if post_check_count == expected_count:
+                logger.info(f"SUCCESS: Site {site.id} history count correctly increased from {pre_check_count} to {post_check_count}")
+            else:
+                logger.error(f"ERROR: Site {site.id} history count should be {expected_count} but is {post_check_count}")
+            
+            logger.info(f"Site {site.id} checked successfully: {site.status}, response time: {site.response_time}ms")
         
         # Update Prometheus metrics
         REQUEST_COUNT.labels(site=site.url, status=str(status_code)).inc()
@@ -46,6 +78,7 @@ def check_site(site):
         SITE_UP.labels(site=site.url).set(1 if response.ok else 0)
         
         return True
+        
     except Exception as e:
         logger.error(f"Error checking site {site.id} - {site.url}: {str(e)}")
         
@@ -53,15 +86,77 @@ def check_site(site):
             if site.id not in sites:
                 return False  # Site was deleted
                 
+            # Update site with error status
             site.status = f"Error: {str(e)}"
             site.response_time = 0
             site.last_checked = datetime.now().isoformat()
+            
+            # Ensure history exists for this site
+            if site.id not in site_history:
+                site_history[site.id] = deque(maxlen=50)
+                logger.warning(f"History was missing for site {site.id}, recreated")
+            
+            # Add exactly ONE history entry for the error
+            add_to_history(site.id, site.status, site.response_time)
+            
+            # Verify history count increased by exactly 1
+            post_check_count = len(site_history[site.id])
+            expected_count = pre_check_count + 1
+            
+            if post_check_count == expected_count:
+                logger.info(f"SUCCESS: Site {site.id} error history count correctly increased from {pre_check_count} to {post_check_count}")
+            else:
+                logger.error(f"ERROR: Site {site.id} error history count should be {expected_count} but is {post_check_count}")
         
         # Update Prometheus metrics
         REQUEST_COUNT.labels(site=site.url, status="error").inc()
         SITE_UP.labels(site=site.url).set(0)
         
         return False
+
+def add_to_history(site_id, status, response_time):
+    """Add a check result to the site's history."""
+    with site_lock:
+        if site_id not in site_history:
+            site_history[site_id] = deque(maxlen=50)  # Keep last 50 checks
+        
+        history_entry = {
+            'timestamp': datetime.now().isoformat(),
+            'status': status,
+            'response_time': response_time
+        }
+        
+        site_history[site_id].append(history_entry)
+        logger.info(f"Added history entry for site {site_id}: {status}, {response_time}ms. Total entries: {len(site_history[site_id])}")
+
+def get_site_history(site_id, limit=20):
+    """Get the history for a specific site."""
+    with site_lock:
+        if site_id not in site_history:
+            logger.warning(f"No history found for site {site_id}")
+            return []
+        
+        # Convert deque to list and return most recent entries first
+        history = list(site_history[site_id])
+        history.reverse()  # Most recent first
+        result = history[:limit]
+        logger.info(f"Retrieved {len(result)} history entries for site {site_id} (total available: {len(history)})")
+        return result
+
+def calculate_uptime_percentage(site_id):
+    """Calculate the uptime percentage based on history."""
+    with site_lock:
+        if site_id not in site_history or len(site_history[site_id]) == 0:
+            logger.info(f"No history for uptime calculation for site {site_id}, returning 100%")
+            return 100.0
+        
+        history = list(site_history[site_id])
+        total_checks = len(history)
+        successful_checks = sum(1 for check in history if check['status'].startswith('OK'))
+        
+        uptime = round((successful_checks / total_checks) * 100, 2)
+        logger.info(f"Calculated uptime for site {site_id}: {uptime}% ({successful_checks}/{total_checks})")
+        return uptime
 
 def add_site(url, name=None, check_interval=60):
     """Add a new site to monitor."""
@@ -83,9 +178,22 @@ def add_site(url, name=None, check_interval=60):
         
         new_site = Site(site_id, url, name, check_interval)
         sites[site_id] = new_site
+        
+        # Initialize empty history for this site immediately
+        site_history[site_id] = deque(maxlen=50)
+        logger.info(f"Initialized empty history for site {site_id}")
     
-    # Perform initial check
-    check_site(new_site)
+    # Perform initial check - this should add exactly 1 history entry
+    logger.info(f"Performing initial check for site {site_id}")
+    check_result = check_site(new_site)
+    
+    # Verify exactly 1 history entry was created
+    with site_lock:
+        history_count = len(site_history.get(site_id, []))
+        logger.info(f"After initial check, site {site_id} has {history_count} history entries. Check result: {check_result}")
+        
+        if history_count != 1:
+            logger.error(f"UNEXPECTED: Site {site_id} should have exactly 1 history entry after initial check, but has {history_count}")
     
     # Start monitoring thread for this site
     start_monitoring(new_site)
@@ -115,6 +223,10 @@ def delete_site(site_id):
                 logger.info(f"Stopping monitoring thread for site {site_id}")
                 monitoring_threads[site_id].stop()
                 del monitoring_threads[site_id]
+            
+            # Remove history
+            if site_id in site_history:
+                del site_history[site_id]
                 
             return True
     return False
@@ -179,6 +291,14 @@ class MonitoringThread:
     def _monitor_site(self):
         """Main monitoring loop."""
         logger.info(f"Monitoring thread for site {self.site.id} started")
+        
+        # Wait for the check interval before the first automatic check
+        # This prevents duplicate checks when a site is first added
+        initial_wait = 0
+        while initial_wait < self.site.check_interval and not self.stop_event.is_set():
+            time.sleep(min(1, self.site.check_interval - initial_wait))
+            initial_wait += 1
+        
         while not self.stop_event.is_set():
             try:
                 # Check if site still exists

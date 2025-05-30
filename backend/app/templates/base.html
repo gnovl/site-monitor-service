@@ -5,7 +5,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
-    <meta name="description" content="Site Monitor Pro - DevOps Demo Project" />
+    <meta
+      name="description"
+      content="Site Monitor Pro - Monitor your websites in real-time"
+    />
     <title>{% block title %}Site Monitor Pro{% endblock %}</title>
     <!-- Tailwind CSS - compiled version -->
     <link
@@ -14,19 +17,64 @@
     />
     {% block head %}{% endblock %}
   </head>
-  <body class="min-h-screen bg-gray-50 flex flex-col">
+  <body
+    style="
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background-color: #f9fafb;
+    "
+  >
     <!-- Header -->
-    <header class="bg-white shadow-sm border-b border-gray-200">
-      <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between items-center py-4">
-          <div class="flex items-center">
-            <h1 class="text-2xl font-bold text-gray-900">Site Monitor Pro</h1>
-            <p class="ml-4 text-gray-500">Monitor your websites in real-time</p>
+    <header
+      style="
+        background-color: white;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        border-bottom: 1px solid #e5e7eb;
+      "
+    >
+      <div style="max-width: 100%; margin: 0 auto; padding: 0 12px">
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+          "
+        >
+          <div style="display: flex; align-items: center">
+            <h1
+              style="
+                font-size: 18px;
+                font-weight: 700;
+                color: #111827;
+                margin: 0;
+              "
+            >
+              Site Monitor Pro
+            </h1>
+            <span style="margin: 0 8px; color: #d1d5db">|</span>
+            <p style="color: #6b7280; font-size: 12px; margin: 0">
+              Monitor your websites in real-time
+            </p>
           </div>
-          <div class="flex space-x-3">
+          <div style="display: flex; gap: 8px">
             <button
               id="addSiteBtn"
-              class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gray-900 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+              style="
+                display: inline-flex;
+                align-items: center;
+                padding: 6px 10px;
+                border: none;
+                font-size: 12px;
+                font-weight: 500;
+                border-radius: 6px;
+                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+                color: white;
+                background-color: #111827;
+                cursor: pointer;
+                transition: background-color 0.2s;
+              "
             >
               {% if sites_count == 0 %}Add Your First Site{% else %}Add New
               Site{% endif %}
@@ -37,36 +85,132 @@
     </header>
 
     <!-- Main Content -->
-    <main class="flex-grow">
-      <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <main style="flex-grow: 1">
+      <div style="max-width: 100%; margin: 0 auto; padding: 16px 12px">
         {% block content %}{% endblock %}
       </div>
     </main>
 
     <!-- Footer -->
-    <footer class="bg-white border-t border-gray-200 py-4">
-      <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
-        <p class="text-center text-gray-500 text-sm">
-          &copy; {{ current_year }} Site Monitor Pro - DevOps Showcase Project
-        </p>
+    <footer
+      style="
+        background-color: white;
+        border-top: 1px solid #e5e7eb;
+        padding: 12px 0;
+      "
+    >
+      <div style="max-width: 100%; margin: 0 auto; padding: 0 12px">
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+          "
+        >
+          <p
+            style="
+              text-align: center;
+              color: #6b7280;
+              font-size: 11px;
+              margin: 0;
+            "
+          >
+            &copy; {{ current_year }} Site Monitor Pro
+          </p>
+          <div style="display: flex; align-items: center; gap: 4px">
+            <span style="color: #6b7280; font-size: 11px">Created by</span>
+            <a
+              href="https://github.com/gnovl"
+              target="_blank"
+              rel="noopener noreferrer"
+              style="
+                display: inline-flex;
+                align-items: center;
+                gap: 4px;
+                color: #374151;
+                text-decoration: none;
+                font-size: 11px;
+                font-weight: 500;
+                padding: 2px 6px;
+                border-radius: 4px;
+                transition: all 0.2s;
+              "
+              onmouseover="this.style.backgroundColor='#f3f4f6'; this.style.color='#111827';"
+              onmouseout="this.style.backgroundColor='transparent'; this.style.color='#374151';"
+            >
+              <svg
+                style="width: 12px; height: 12px"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"
+                />
+              </svg>
+              gnovl
+            </a>
+          </div>
+        </div>
       </div>
     </footer>
 
     <!-- Add Site Modal -->
-    <div id="addSiteModal" class="modal">
-      <div class="modal-content p-6">
-        <div class="flex justify-between items-center mb-4">
-          <h2 class="text-lg font-medium">
+    <div
+      id="addSiteModal"
+      style="
+        display: none;
+        position: fixed;
+        z-index: 50;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.5);
+        transition: opacity 0.3s ease;
+      "
+    >
+      <div
+        style="
+          background-color: #fefefe;
+          margin: 5% auto;
+          border-radius: 8px;
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+          max-width: 500px;
+          width: 90%;
+          animation: modalFadeIn 0.3s;
+        "
+      >
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding: 12px;
+          "
+        >
+          <h2 style="font-size: 14px; font-weight: 500; margin: 0">
             {% if sites_count == 0 %}Add Your First Site{% else %}Add a New Site
             to Monitor{% endif %}
           </h2>
-          <button id="closeModalBtn" class="text-gray-500 hover:text-gray-700">
+          <button
+            id="closeModalBtn"
+            style="
+              color: #6b7280;
+              background: none;
+              border: none;
+              cursor: pointer;
+              padding: 4px;
+            "
+          >
             <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-6 w-6"
+              style="height: 16px; width: 16px"
               fill="none"
-              viewBox="0 0 24 24"
               stroke="currentColor"
+              viewBox="0 0 24 24"
             >
               <path
                 stroke-linecap="round"
@@ -80,44 +224,109 @@
 
         <div
           id="modalError"
-          class="mb-6 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-md hidden"
+          style="
+            margin-bottom: 16px;
+            background-color: #fee2e2;
+            border: 1px solid #fca5a5;
+            color: #991b1b;
+            padding: 12px;
+            border-radius: 6px;
+            display: none;
+          "
         >
           <span id="errorMessage"></span>
           <button
-            onclick="this.parentElement.classList.add('hidden')"
-            class="float-right font-bold"
+            onclick="this.parentElement.style.display='none'"
+            style="
+              float: right;
+              font-weight: bold;
+              background: none;
+              border: none;
+              cursor: pointer;
+            "
           >
             &times;
           </button>
         </div>
 
-        <form id="addSiteForm" class="space-y-4">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <form
+          id="addSiteForm"
+          style="
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding: 0 12px 12px 12px;
+          "
+        >
+          <div
+            style="
+              display: grid;
+              grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+              gap: 12px;
+            "
+          >
             <div>
-              <label class="block text-sm font-medium text-gray-700">URL</label>
+              <label
+                style="
+                  display: block;
+                  font-size: 12px;
+                  font-weight: 500;
+                  color: #374151;
+                  margin-bottom: 4px;
+                "
+                >URL</label
+              >
               <input
                 type="url"
                 name="url"
                 required
-                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-gray-500 focus:border-gray-500"
+                style="
+                  width: 100%;
+                  border: 1px solid #d1d5db;
+                  border-radius: 6px;
+                  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+                  padding: 6px;
+                  font-size: 12px;
+                "
                 placeholder="https://example.com"
               />
             </div>
 
             <div>
-              <label class="block text-sm font-medium text-gray-700"
+              <label
+                style="
+                  display: block;
+                  font-size: 12px;
+                  font-weight: 500;
+                  color: #374151;
+                  margin-bottom: 4px;
+                "
                 >Name (optional)</label
               >
               <input
                 type="text"
                 name="name"
-                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-gray-500 focus:border-gray-500"
+                style="
+                  width: 100%;
+                  border: 1px solid #d1d5db;
+                  border-radius: 6px;
+                  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+                  padding: 6px;
+                  font-size: 12px;
+                "
                 placeholder="My Website"
               />
             </div>
 
             <div>
-              <label class="block text-sm font-medium text-gray-700"
+              <label
+                style="
+                  display: block;
+                  font-size: 12px;
+                  font-weight: 500;
+                  color: #374151;
+                  margin-bottom: 4px;
+                "
                 >Check Interval (seconds)</label
               >
               <input
@@ -125,12 +334,26 @@
                 name="check_interval"
                 min="10"
                 value="60"
-                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-gray-500 focus:border-gray-500"
+                style="
+                  width: 100%;
+                  border: 1px solid #d1d5db;
+                  border-radius: 6px;
+                  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+                  padding: 6px;
+                  font-size: 12px;
+                "
               />
             </div>
 
             <div>
-              <label class="block text-sm font-medium text-gray-700"
+              <label
+                style="
+                  display: block;
+                  font-size: 12px;
+                  font-weight: 500;
+                  color: #374151;
+                  margin-bottom: 4px;
+                "
                 >Response Time Threshold (ms)</label
               >
               <input
@@ -138,23 +361,61 @@
                 name="response_time_threshold"
                 min="100"
                 value="1000"
-                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-gray-500 focus:border-gray-500"
+                style="
+                  width: 100%;
+                  border: 1px solid #d1d5db;
+                  border-radius: 6px;
+                  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+                  padding: 6px;
+                  font-size: 12px;
+                "
                 title="Warning will be shown if response time exceeds this value"
               />
             </div>
           </div>
 
-          <div class="flex justify-end">
+          <div
+            style="
+              display: flex;
+              justify-content: flex-end;
+              gap: 8px;
+              margin-top: 8px;
+            "
+          >
             <button
               type="button"
               id="cancelAddSite"
-              class="mr-3 inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+              style="
+                display: inline-flex;
+                align-items: center;
+                padding: 6px 10px;
+                border: 1px solid #d1d5db;
+                font-size: 12px;
+                font-weight: 500;
+                border-radius: 6px;
+                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+                color: #374151;
+                background-color: white;
+                cursor: pointer;
+              "
             >
               Cancel
             </button>
             <button
               type="submit"
-              class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gray-900 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+              style="
+                display: inline-flex;
+                align-items: center;
+                padding: 6px 10px;
+                border: none;
+                font-size: 12px;
+                font-weight: 500;
+                border-radius: 6px;
+                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+                color: white;
+                background-color: #111827;
+                cursor: pointer;
+              "
             >
               {% if sites_count == 0 %}Add First Site{% else %}Add Site{% endif
               %}
@@ -183,7 +444,7 @@
       // Close modal
       function closeModal() {
         modal.style.display = "none";
-        modalError.classList.add("hidden");
+        modalError.style.display = "none";
         addSiteForm.reset();
       }
 
@@ -203,7 +464,7 @@
 
         const formData = new FormData(addSiteForm);
 
-        fetch('{{ url_for("api.add_site") }}', {
+        fetch("/api/sites", {
           method: "POST",
           body: formData,
         })
@@ -223,9 +484,25 @@
             // Show error message
             errorMessage.textContent =
               error.message || "Error adding site. Please try again.";
-            modalError.classList.remove("hidden");
+            modalError.style.display = "block";
           });
       });
+
+      // Add keyframe animation
+      const style = document.createElement("style");
+      style.textContent = `
+        @keyframes modalFadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(-20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+      `;
+      document.head.appendChild(style);
     </script>
 
     {% block scripts %}{% endblock %}

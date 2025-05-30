@@ -83,44 +83,6 @@ def index():
                           error=error,
                           current_year=datetime.now().year)
 
-@api_bp.route('/add', methods=['GET', 'POST'])
-def add_site():
-    error = None
-    sites_count = len(get_all_sites())
-    
-    if request.method == 'POST':
-        url = request.form.get('url')
-        name = request.form.get('name')
-        check_interval = request.form.get('check_interval', '60')
-        
-        if not url:
-            error = "URL is required"
-            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-                return error, 400
-            else:
-                return render_template('add_site.html', error=error, sites_count=sites_count, current_year=datetime.now().year)
-        else:
-            try:
-                check_interval = int(check_interval)
-                site = service_add_site(url, name, check_interval)
-                
-                if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-                    return "Site added successfully", 200
-                else:
-                    return redirect(url_for('api.index'))
-            except Exception as e:
-                error = f"Error adding site: {str(e)}"
-                if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-                    return error, 400
-                else:
-                    return render_template('add_site.html', error=error, sites_count=sites_count, current_year=datetime.now().year)
-    
-    # GET request - render the add_site page
-    return render_template('add_site.html', 
-                          error=error, 
-                          sites_count=sites_count,
-                          current_year=datetime.now().year)
-
 @api_bp.route('/site/<int:site_id>', methods=['GET'])
 def site_details(site_id):
     site = get_site(site_id)
@@ -225,22 +187,39 @@ def get_sites_api():
     }
 })
 def create_site_api():
-    data = request.get_json()
-    
-    if not data or 'url' not in data:
-        return jsonify({"error": "URL is required"}), 400
-    
-    url = data['url']
-    name = data.get('name')
-    check_interval = data.get('check_interval', 60)
+    # Handle both JSON and form data
+    if request.is_json:
+        data = request.get_json()
+        if not data or 'url' not in data:
+            return jsonify({"error": "URL is required"}), 400
+        url = data['url']
+        name = data.get('name')
+        check_interval = data.get('check_interval', 60)
+    else:
+        # Handle form data from the modal
+        url = request.form.get('url')
+        name = request.form.get('name')
+        check_interval = request.form.get('check_interval', 60)
+        
+        if not url:
+            return "URL is required", 400
     
     try:
         site = service_add_site(url, name, check_interval)
         current_app.logger.info(f"New site added: {url}")
-        return jsonify(site.to_dict()), 201
+        
+        if request.is_json:
+            return jsonify(site.to_dict()), 201
+        else:
+            # For form submissions, return success message
+            return "Site added successfully", 200
+            
     except Exception as e:
         current_app.logger.error(f"Error adding site: {str(e)}")
-        return jsonify({"error": str(e)}), 400
+        if request.is_json:
+            return jsonify({"error": str(e)}), 400
+        else:
+            return f"Error adding site: {str(e)}", 400
 
 @api_bp.route('/api/sites/<int:site_id>', methods=['GET'])
 def get_single_site_api(site_id):
@@ -251,6 +230,16 @@ def get_single_site_api(site_id):
     # Get the site dictionary and add the formatted last checked time
     site_dict = site.to_dict()
     site_dict['last_checked_formatted'] = format_last_checked(site.last_checked) if site.last_checked else None
+    
+    # Add history data directly from services - no modifications
+    from app.services import get_site_history, calculate_uptime_percentage
+    history = get_site_history(site_id, limit=20)
+    
+    # Debug logging - but NO modifications to history
+    current_app.logger.info(f"API: Site {site_id} - Status: {site.status}, History count: {len(history)}")
+    
+    site_dict['history'] = history
+    site_dict['uptime_percentage'] = calculate_uptime_percentage(site_id)
     
     return jsonify(site_dict)
 
@@ -290,12 +279,32 @@ def check_single_site_api(site_id):
     if not site:
         return jsonify({"error": "Site not found"}), 404
     
-    # Use the service to check only this specific site
-    service_check_site(site)
+    # Log before check
+    from app.services import get_site_history
+    pre_check_history = get_site_history(site_id, limit=20)
+    current_app.logger.info(f"API CHECK: Site {site_id} has {len(pre_check_history)} history entries before manual check")
+    
+    # Use the service to check only this specific site - this should add exactly 1 history entry
+    check_result = service_check_site(site)
+    
+    # Log after check
+    post_check_history = get_site_history(site_id, limit=20)
+    current_app.logger.info(f"API CHECK: Site {site_id} has {len(post_check_history)} history entries after manual check. Check result: {check_result}")
+    
+    # Verify the count increased by exactly 1
+    if len(post_check_history) == len(pre_check_history) + 1:
+        current_app.logger.info(f"API CHECK SUCCESS: Site {site_id} history correctly increased by 1")
+    else:
+        current_app.logger.error(f"API CHECK ERROR: Site {site_id} history should have increased by 1, but went from {len(pre_check_history)} to {len(post_check_history)}")
     
     # Get formatted last checked time for the response
     site_dict = site.to_dict()
     site_dict['last_checked_formatted'] = format_last_checked(site.last_checked) if site.last_checked else None
+    
+    # Add history data and uptime percentage
+    from app.services import calculate_uptime_percentage
+    site_dict['history'] = post_check_history
+    site_dict['uptime_percentage'] = calculate_uptime_percentage(site_id)
     
     current_app.logger.info(f"Site {site_id} checked manually")
     

@@ -1,0 +1,138 @@
+<!-- backend/app/templates/partials/dashboard_stats.html -->
+<div
+  style="
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+    margin-bottom: 16px;
+  "
+>
+  <div
+    style="
+      background-color: white;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+      padding: 12px;
+      border: 1px solid #e5e7eb;
+    "
+  >
+    <div style="display: flex; align-items: center">
+      <div style="flex-shrink: 0">
+        <svg
+          style="height: 20px; width: 20px; color: #2563eb"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+          />
+        </svg>
+      </div>
+      <div style="margin-left: 10px">
+        <h2
+          style="
+            font-size: 14px;
+            font-weight: 500;
+            color: #111827;
+            margin: 0 0 2px 0;
+          "
+        >
+          Total Sites
+        </h2>
+        <p style="font-size: 24px; font-weight: 700; color: #111827; margin: 0">
+          {{ sites|length }}
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div
+    style="
+      background-color: white;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+      padding: 12px;
+      border: 1px solid #e5e7eb;
+    "
+  >
+    <div style="display: flex; align-items: center">
+      <div style="flex-shrink: 0">
+        <svg
+          style="height: 20px; width: 20px; color: #059669"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
+        </svg>
+      </div>
+      <div style="margin-left: 10px">
+        <h2
+          style="
+            font-size: 14px;
+            font-weight: 500;
+            color: #111827;
+            margin: 0 0 2px 0;
+          "
+        >
+          Sites Up
+        </h2>
+        <p style="font-size: 24px; font-weight: 700; color: #059669; margin: 0">
+          {{ sites_up }}
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div
+    style="
+      background-color: white;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+      padding: 12px;
+      border: 1px solid #e5e7eb;
+    "
+  >
+    <div style="display: flex; align-items: center">
+      <div style="flex-shrink: 0">
+        <svg
+          style="height: 20px; width: 20px; color: #dc2626"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
+        </svg>
+      </div>
+      <div style="margin-left: 10px">
+        <h2
+          style="
+            font-size: 14px;
+            font-weight: 500;
+            color: #111827;
+            margin: 0 0 2px 0;
+          "
+        >
+          Sites Down
+        </h2>
+        <p style="font-size: 24px; font-weight: 700; color: #dc2626; margin: 0">
+          {{ sites_down }}
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

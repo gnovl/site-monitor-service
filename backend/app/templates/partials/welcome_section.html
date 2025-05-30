@@ -1,0 +1,45 @@
+<!-- backend/app/templates/partials/welcome_section.html -->
+<div class="py-10 text-center">
+  <div
+    class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-gray-100"
+  >
+    <svg
+      class="h-6 w-6 text-gray-600"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+      />
+    </svg>
+  </div>
+
+  <h3 class="mt-4 text-lg font-medium text-gray-900">
+    Get started with your website monitoring
+  </h3>
+
+  <p class="mt-2 text-gray-500 max-w-sm mx-auto">
+    Track uptime and response times for your websites in real-time. Get notified
+    when issues occur.
+  </p>
+
+  <div class="mt-6">
+    <a
+      href="{{ url_for('api.add_site') }}"
+      class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gray-900 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors"
+    >
+      <svg class="-ml-1 mr-2 h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+        <path
+          fill-rule="evenodd"
+          d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
+          clip-rule="evenodd"
+        />
+      </svg>
+      Add Your First Site
+    </a>
+  </div>
+</div>
